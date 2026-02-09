@@ -8,7 +8,7 @@
         <h2>Horses</h2>
         <HorseList :horses="horses" />
         <button
-          class="btn btn-primary"
+          class="btn btn-primary generate-horses-btn"
           :disabled="phase === 'racing'"
           @click="onGenerateHorses"
         >
@@ -161,6 +161,9 @@ export default {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.generate-horses-btn {
+  margin-top: 0.75rem;
 }
 .btn-primary {
   background: #e94560;
