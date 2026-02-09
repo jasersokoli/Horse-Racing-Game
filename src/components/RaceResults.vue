@@ -6,18 +6,17 @@
       class="round-result"
     >
       <div class="round-header">Round {{ result.roundNumber }} ({{ result.length }} m)</div>
-      <ol class="finish-list">
-        <li
-          v-for="(finish, pos) in result.finishOrder"
+      <div class="finish-list">
+        <div
+          v-for="finish in result.finishOrder"
           :key="finish.horseId"
           class="finish-item"
-          :style="{ '--horse-color': finish.color }"
         >
-          <span class="pos">{{ pos + 1 }}</span>
-          <span class="swatch"></span>
+          <span class="pos">{{ finish.position }}</span>
+          <span class="swatch" :style="{ background: finish.color }"></span>
           <span class="horse-label">Horse {{ finish.horseId }}</span>
-        </li>
-      </ol>
+        </div>
+      </div>
     </div>
     <p v-if="!roundResults.length" class="empty">Results will appear here after each round.</p>
   </div>
@@ -41,7 +40,7 @@ export default {
 
 <style scoped>
 .results {
-  max-height: 280px;
+  max-height: 400px;
   overflow-y: auto;
 }
 .round-result {
@@ -61,29 +60,34 @@ export default {
   color: #e94560;
 }
 .finish-list {
-  margin: 0;
-  padding-left: 1.25rem;
-  list-style: decimal;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 .finish-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.2rem 0;
-  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  background: #0f3460;
+  border-radius: 4px;
+  font-size: 0.85rem;
 }
 .pos {
-  position: absolute;
-  margin-left: -1.25rem;
-  font-weight: 600;
-  color: #aaa;
+  width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: #e94560;
+  flex-shrink: 0;
 }
 .swatch {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 2px;
-  background: var(--horse-color);
   flex-shrink: 0;
+}
+.horse-label {
+  color: #ddd;
 }
 .empty {
   color: #666;
