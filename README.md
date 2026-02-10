@@ -121,5 +121,6 @@ E2E specs are in `cypress/e2e/`. The full race flow test waits for all 6 rounds 
 ## GitHub Pages (one-time setup)
 
 1. In the repo go to **Settings > Pages**.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Push to `main` (or re-run the "Deploy to GitHub Pages" workflow). The site will be at [https://jasersokoli.github.io/Horse-Racing-Game/](https://jasersokoli.github.io/Horse-Racing-Game/).
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+3. Choose branch **gh-pages**, folder **/ (root)**, then **Save**.
+4. Push to `main`; the workflow will build and push the app to the `gh-pages` branch. The site will be at [https://jasersokoli.github.io/Horse-Racing-Game/](https://jasersokoli.github.io/Horse-Racing-Game/).
