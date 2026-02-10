@@ -2,6 +2,8 @@
 
 Interactive horse racing game built with Vue.js. Generate a pool of horses, create a 6-round race schedule, and run races with animated movement and sequential results.
 
+**Live:** [https://jasersokoli.github.io/Horse-Racing-Game/](https://jasersokoli.github.io/Horse-Racing-Game/) (after enabling GitHub Pages below)
+
 ## Requirements
 
 - **Horses:** 20 horses, each with a unique color and a condition score from 1 to 100.
@@ -115,3 +117,9 @@ npm run test:e2e:open
 ```
 
 E2E specs are in `cypress/e2e/`. The full race flow test waits for all 6 rounds to complete (about 15 seconds).
+
+## GitHub Pages (one-time setup)
+
+1. In the repo go to **Settings > Pages**.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Push to `main` (or re-run the "Deploy to GitHub Pages" workflow). The site will be at [https://jasersokoli.github.io/Horse-Racing-Game/](https://jasersokoli.github.io/Horse-Racing-Game/).
