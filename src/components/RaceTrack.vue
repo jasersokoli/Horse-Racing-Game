@@ -5,17 +5,17 @@
     </div>
     <div class="lane-wrap">
       <div
-        v-for="(horseId, index) in round.horseIds"
-        :key="horseId"
+        v-for="(entry, index) in displayOrder"
+        :key="entry.horseId"
         class="lane"
       >
         <div
           class="runner"
-          :style="runnerStyle(horseId, index)"
+          :style="runnerStyle(entry)"
           :class="{ racing: phase === 'racing' }"
         >
-          <span class="horse-dot" :style="{ background: horseColor(horseId) }"></span>
-          <span class="horse-id">Horse {{ horseId }}</span>
+          <span class="horse-dot" :style="{ background: entry.color }"></span>
+          <span class="horse-id">Horse {{ entry.horseId }}</span>
         </div>
       </div>
     </div>
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { ANIMATION_DURATION } from '../config'
+
 export default {
   name: 'RaceTrack',
   props: {
@@ -34,24 +36,40 @@ export default {
       type: Array,
       default: () => [],
     },
+    finishOrder: {
+      type: Array,
+      default: null,
+    },
     phase: {
       type: String,
       default: 'idle',
     },
   },
-  methods: {
-    horseColor(horseId) {
-      const h = this.horses.find((x) => x.id === horseId)
-      return h ? h.color : '#888'
+  computed: {
+    horsesById() {
+      const map = new Map()
+      this.horses.forEach((h) => map.set(h.id, h))
+      return map
     },
-    runnerStyle(horseId, index) {
-      const h = this.horses.find((x) => x.id === horseId)
-      const condition = h ? h.condition : 50
-      const duration = 2 + (100 - condition) / 50 + (index % 3) * 0.2
-      return {
-        '--duration': `${duration}s`,
-        '--lane': index,
+    displayOrder() {
+      if (this.finishOrder && this.finishOrder.length > 0) {
+        return this.finishOrder.map(({ horseId, color }) => ({ horseId, color }))
       }
+      return this.round.horseIds.map((horseId) => {
+        const h = this.horsesById.get(horseId)
+        return { horseId, color: h ? h.color : '#888' }
+      })
+    },
+  },
+  methods: {
+    runnerStyle(entry) {
+      const position = this.finishOrder
+        ? this.finishOrder.findIndex((e) => e.horseId === entry.horseId)
+        : 0
+      const duration =
+        ANIMATION_DURATION.BASE_SECONDS +
+        position * ANIMATION_DURATION.POSITION_OFFSET_PER_PLACE
+      return { '--duration': `${duration}s` }
     },
   },
 }
@@ -90,17 +108,17 @@ export default {
   gap: 0.5rem;
   padding-left: 0.5rem;
   width: max-content;
-  transition: left 0.1s linear;
+  will-change: transform;
 }
 .runner.racing {
   animation: run var(--duration) ease-out forwards;
 }
 @keyframes run {
   from {
-    left: 0;
+    transform: translateX(0);
   }
   to {
-    left: calc(100% - 120px);
+    transform: translateX(1200px);
   }
 }
 .horse-dot {

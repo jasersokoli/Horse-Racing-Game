@@ -41,6 +41,7 @@
           v-if="currentRound"
           :round="currentRound"
           :horses="horses"
+          :finish-order="pendingRoundResult ? pendingRoundResult.finishOrder : null"
           :phase="phase"
         />
         <p v-else class="placeholder">Generate a schedule and start the race.</p>
@@ -75,6 +76,7 @@ export default {
       'schedule',
       'currentRoundIndex',
       'roundResults',
+      'pendingRoundResult',
       'currentRound',
       'isScheduleGenerated',
     ]),
@@ -117,6 +119,15 @@ export default {
   padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+  .horse-panel,
+  .schedule-panel {
+    grid-column: 1;
+  }
 }
 .panel {
   background: #16213e;

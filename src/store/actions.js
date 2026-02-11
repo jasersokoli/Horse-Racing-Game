@@ -1,8 +1,11 @@
+import { TOTAL_HORSES, HORSES_PER_ROUND, ROUND_LENGTHS_M, RACE_ANIMATION_DURATION_MS } from '../config'
+
 const MUTATIONS = {
   SET_HORSES: 'SET_HORSES',
   SET_SCHEDULE: 'SET_SCHEDULE',
   SET_CURRENT_ROUND: 'SET_CURRENT_ROUND',
   APPEND_ROUND_RESULT: 'APPEND_ROUND_RESULT',
+  SET_PENDING_ROUND_RESULT: 'SET_PENDING_ROUND_RESULT',
   SET_PHASE: 'SET_PHASE',
   RESET: 'RESET',
 }
@@ -29,7 +32,7 @@ function shuffle(arr) {
 
 export default {
   generateHorses({ commit }) {
-    const horses = Array.from({ length: 20 }, (_, i) => ({
+    const horses = Array.from({ length: TOTAL_HORSES }, (_, i) => ({
       id: i + 1,
       color: COLORS[i % COLORS.length],
       condition: randomInt(1, 100),
@@ -40,9 +43,8 @@ export default {
 
   generateSchedule({ state, commit }) {
     if (state.horses.length === 0) return
-    const { ROUND_LENGTHS } = state
-    const schedule = ROUND_LENGTHS.map((length, index) => {
-      const ids = shuffle(state.horses.map((h) => h.id)).slice(0, 10)
+    const schedule = ROUND_LENGTHS_M.map((length, index) => {
+      const ids = shuffle(state.horses.map((h) => h.id)).slice(0, HORSES_PER_ROUND)
       return { roundNumber: index + 1, length, horseIds: ids }
     })
     commit(MUTATIONS.SET_SCHEDULE, schedule)
@@ -51,19 +53,14 @@ export default {
 
   async runRound({ state, commit }, payload) {
     const roundIndex = typeof payload === 'number' ? payload : payload.roundIndex
-    const durationMs = typeof payload === 'object' && payload.durationMs != null ? payload.durationMs : 2500
+    const durationMs = typeof payload === 'object' && payload.durationMs != null ? payload.durationMs : RACE_ANIMATION_DURATION_MS
     const round = state.schedule[roundIndex]
     if (!round) return
-    commit(MUTATIONS.SET_CURRENT_ROUND, roundIndex)
-    commit(MUTATIONS.SET_PHASE, 'racing')
-
-    await new Promise((r) => setTimeout(r, durationMs))
 
     const horsesInRound = round.horseIds.map((id) =>
       state.horses.find((h) => h.id === id)
     ).filter(Boolean)
-
-    const results = horsesInRound
+    const finishOrder = horsesInRound
       .map((h) => ({
         horseId: h.id,
         color: h.color,
@@ -73,11 +70,19 @@ export default {
       .sort((a, b) => b.score - a.score)
       .map((r, i) => ({ ...r, position: i + 1 }))
 
-    commit(MUTATIONS.APPEND_ROUND_RESULT, {
+    const result = {
       roundNumber: round.roundNumber,
       length: round.length,
-      finishOrder: results,
-    })
+      finishOrder,
+    }
+    commit(MUTATIONS.SET_PENDING_ROUND_RESULT, result)
+    commit(MUTATIONS.SET_CURRENT_ROUND, roundIndex)
+    commit(MUTATIONS.SET_PHASE, 'racing')
+
+    await new Promise((r) => setTimeout(r, durationMs))
+
+    commit(MUTATIONS.APPEND_ROUND_RESULT, result)
+    commit(MUTATIONS.SET_PENDING_ROUND_RESULT, null)
 
     if (roundIndex >= state.schedule.length - 1) {
       commit(MUTATIONS.SET_PHASE, 'idle')

@@ -28,6 +28,7 @@ describe('store mutations', () => {
   it('SET_SCHEDULE sets schedule and resets round state', () => {
     store.state.currentRoundIndex = 2
     store.state.roundResults = [{}]
+    store.state.pendingRoundResult = {}
     const schedule = [
       { roundNumber: 1, length: 1200, horseIds: [1, 2] },
     ]
@@ -35,6 +36,7 @@ describe('store mutations', () => {
     expect(store.state.schedule).toEqual(schedule)
     expect(store.state.currentRoundIndex).toBeNull()
     expect(store.state.roundResults).toEqual([])
+    expect(store.state.pendingRoundResult).toBeNull()
   })
 
   it('SET_CURRENT_ROUND sets currentRoundIndex', () => {
@@ -54,15 +56,23 @@ describe('store mutations', () => {
     expect(store.state.phase).toBe('racing')
   })
 
+  it('SET_PENDING_ROUND_RESULT sets pendingRoundResult', () => {
+    const result = { roundNumber: 1, finishOrder: [] }
+    store.commit('SET_PENDING_ROUND_RESULT', result)
+    expect(store.state.pendingRoundResult).toEqual(result)
+  })
+
   it('RESET clears schedule and round state', () => {
     store.state.schedule = [{ roundNumber: 1 }]
     store.state.currentRoundIndex = 0
     store.state.roundResults = [{}]
+    store.state.pendingRoundResult = {}
     store.state.phase = 'scheduled'
     store.commit('RESET')
     expect(store.state.schedule).toEqual([])
     expect(store.state.currentRoundIndex).toBeNull()
     expect(store.state.roundResults).toEqual([])
+    expect(store.state.pendingRoundResult).toBeNull()
     expect(store.state.phase).toBe('idle')
   })
 })

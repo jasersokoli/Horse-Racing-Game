@@ -28,10 +28,6 @@ describe('store state and getters', () => {
     expect(store.state.schedule).toEqual([])
   })
 
-  it('has ROUND_LENGTHS with 6 values', () => {
-    expect(store.state.ROUND_LENGTHS).toEqual([1200, 1400, 1600, 1800, 2000, 2200])
-  })
-
   it('currentRound returns null when no round set', () => {
     expect(store.getters.currentRound).toBeNull()
   })
